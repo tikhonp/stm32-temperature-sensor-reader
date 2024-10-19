@@ -19,12 +19,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "gpio.h"
-#include "stm32f1xx_hal_uart.h"
 #include "usart.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "../lib/str_queue.h"
+#include "str_queue.h"
 #include <stdint.h>
 /* USER CODE END Includes */
 
@@ -61,8 +60,8 @@ Queue messages;
 bool transmiting = false;
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
-    const uint8_t *message = dequeue(&messages);
-    if (message) {
+    if (!isEmpty(&messages)) {
+        const uint8_t *message = dequeue(&messages);
         HAL_UART_Transmit_IT(&huart1, (uint8_t *)message, sizeof(message));
     } else {
         transmiting = false;
@@ -71,7 +70,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 
 void serial_log(const uint8_t *message) {
     enqueue(&messages, message);
-    if (isEmpty(&messages) && !transmiting) {
+    if (!transmiting) {
         transmiting = true;
         HAL_UART_TxCpltCallback(&huart1);
     }
@@ -116,8 +115,14 @@ int main(void) {
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1) {
-        uint8_t data[] = "lol \r\n";
-        HAL_UART_Transmit(&huart1, data, sizeof(data), 10);
+        uint8_t data[] = "kek \r\n";
+        serial_log(data);
+        serial_log(data);
+        serial_log(data);
+        serial_log(data);
+        serial_log(data);
+        serial_log(data);
+        serial_log(data);
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
         HAL_Delay(1000);
         /* USER CODE END WHILE */

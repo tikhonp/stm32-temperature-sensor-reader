@@ -18,3 +18,6 @@ update:
 
 generate:
 	stm32pio generate
+
+monitor:
+	screen $(shell /bin/ls /dev/tty.usbserial*) 115200
