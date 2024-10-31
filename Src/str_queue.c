@@ -1,5 +1,4 @@
 #include "str_queue.h"
-#include <stdint.h>
 
 void initStrQueue(Queue *q) {
     q->front = -1;

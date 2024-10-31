@@ -68,13 +68,20 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
     }
 }
 
-void serial_log(const uint8_t *message) {
+void _serial_log(const uint8_t *message) {
     enqueue(&messages, message);
     if (!transmiting) {
         transmiting = true;
         HAL_UART_TxCpltCallback(&huart1);
     }
 }
+
+void serial_log(const uint8_t *message) {
+    uint8_t eol[] = "\r\n";
+    _serial_log(eol);
+    _serial_log(message);
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -115,13 +122,7 @@ int main(void) {
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1) {
-        uint8_t data[] = "kek \r\n";
-        serial_log(data);
-        serial_log(data);
-        serial_log(data);
-        serial_log(data);
-        serial_log(data);
-        serial_log(data);
+        uint8_t data[] = "Hello, World!";
         serial_log(data);
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
         HAL_Delay(1000);
