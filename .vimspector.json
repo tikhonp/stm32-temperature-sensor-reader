@@ -1,0 +1,15 @@
+{
+  "configurations": {
+    "platformio_configuration": {
+      "adapter": "vscode-cpptools",
+      "configuration": {
+        "request": "launch",
+        "cwd": "${workspaceRoot}",
+        "program": "${workspaceRoot}/.pio/build/eval_f107vc/firmware.elf",
+        "MIMode": "gdb",
+        "miDebuggerPath": "piodebuggdb",
+        "miDebuggerArgs": "--project-dir ${workspaceRoot} -x .pioinit"
+      }
+    }
+  }
+}   

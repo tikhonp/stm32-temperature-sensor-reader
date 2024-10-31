@@ -23,6 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "DHT.h"
 #include "str_queue.h"
 #include <stdint.h>
 /* USER CODE END Includes */
@@ -82,6 +83,8 @@ void serial_log(const uint8_t *message) {
     _serial_log(message);
 }
 
+DHT_DataTypedef DHT11_Data;
+float Temperature, Humidity;
 /* USER CODE END 0 */
 
 /**
@@ -124,8 +127,34 @@ int main(void) {
     while (1) {
         uint8_t data[] = "Hello, World!";
         serial_log(data);
+
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
-        HAL_Delay(1000);
+
+        DHT_GetData(&DHT11_Data);
+        Temperature = DHT11_Data.Temperature;
+        Humidity = DHT11_Data.Humidity;
+
+        char temp_str_data[500];
+
+        int dVal, dec, i;
+
+        dVal = Temperature;
+        dec = (int)(Temperature * 100) % 100;
+
+        temp_str_data[0] = (dec % 10) + '0';
+        temp_str_data[1] = (dec / 10) + '0';
+        temp_str_data[2] = '.';
+
+        i = 3;
+        while (dVal > 0) {
+            temp_str_data[i] = (dVal % 10) + '0';
+            dVal /= 10;
+            i++;
+        }
+
+        serial_log(temp_str_data);
+
+        HAL_Delay(3000);
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
