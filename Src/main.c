@@ -26,6 +26,7 @@
 #include "DHT.h"
 #include "str_queue.h"
 #include <stdint.h>
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -85,6 +86,12 @@ void serial_log(const uint8_t *message) {
 
 DHT_DataTypedef DHT11_Data;
 float Temperature, Humidity;
+
+char *getN(int n) {
+    char buffer[50];
+    return itoa(n, buffer, 10);
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -134,25 +141,15 @@ int main(void) {
         Temperature = DHT11_Data.Temperature;
         Humidity = DHT11_Data.Humidity;
 
-        char temp_str_data[500];
+        char buffer[50];
 
-        int dVal, dec, i;
+        itoa((int)Temperature, buffer, 10);
+        serial_log(buffer);
 
-        dVal = Temperature;
-        dec = (int)(Temperature * 100) % 100;
+        HAL_Delay(3000);
 
-        temp_str_data[0] = (dec % 10) + '0';
-        temp_str_data[1] = (dec / 10) + '0';
-        temp_str_data[2] = '.';
-
-        i = 3;
-        while (dVal > 0) {
-            temp_str_data[i] = (dVal % 10) + '0';
-            dVal /= 10;
-            i++;
-        }
-
-        serial_log(temp_str_data);
+        itoa((int)Humidity, buffer, 10);
+        serial_log(buffer);
 
         HAL_Delay(3000);
         /* USER CODE END WHILE */
@@ -234,4 +231,3 @@ void assert_failed(uint8_t *file, uint32_t line) {
     /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
