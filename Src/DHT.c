@@ -137,4 +137,3 @@ void DHT_GetData(DHT_DataTypedef *DHT_Data) {
 #endif
     }
 }
-

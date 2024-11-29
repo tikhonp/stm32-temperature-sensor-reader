@@ -85,13 +85,6 @@ void serial_log(const uint8_t *message) {
 }
 
 DHT_DataTypedef DHT11_Data;
-float Temperature, Humidity;
-
-char *getN(int n) {
-    char buffer[50];
-    return itoa(n, buffer, 10);
-}
-
 /* USER CODE END 0 */
 
 /**
@@ -138,17 +131,15 @@ int main(void) {
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
 
         DHT_GetData(&DHT11_Data);
-        Temperature = DHT11_Data.Temperature;
-        Humidity = DHT11_Data.Humidity;
 
         char buffer[50];
 
-        itoa((int)Temperature, buffer, 10);
+        itoa((int)DHT11_Data.Temperature, buffer, 10);
         serial_log(buffer);
 
         HAL_Delay(3000);
 
-        itoa((int)Humidity, buffer, 10);
+        itoa((int)DHT11_Data.Humidity, buffer, 10);
         serial_log(buffer);
 
         HAL_Delay(3000);

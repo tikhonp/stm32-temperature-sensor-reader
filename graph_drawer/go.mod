@@ -1,4 +1,4 @@
-module stm_
+module graph_drawer
 
 go 1.23.3
 

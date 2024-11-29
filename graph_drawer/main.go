@@ -15,51 +15,43 @@ import (
 )
 
 const (
-	comPort  = "/dev/tty.usbserial-AQ018TY4"
-	baudRate = 115200
+	comPort       = "/dev/tty.usbserial-AQ018TY4"
+	baudRate      = 115200
+	graphFileName = "points.png"
 )
 
-type Frame struct {
+type ClimatFrame struct {
 	Temp int
 	Hum  int
 }
 
-var frames []Frame
+var data []ClimatFrame
 
-func createGraph() {
-    p := plot.New()
+func generatePointsGraph() {
+	p := plot.New()
 
 	p.Title.Text = "Plotutil example"
 	p.X.Label.Text = "X"
 	p.Y.Label.Text = "Y"
 
 	err := plotutil.AddLinePoints(p,
-		"Temp", generateTempGraoh(),
-		"Hum", generateHumGraoh())
+		"Temp", plotDataFrom(len(data), func(idx int) float64 { return float64(data[idx].Temp) }),
+		"Hum", plotDataFrom(len(data), func(idx int) float64 { return float64(data[idx].Hum) }),
+	)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
-	// Save the plot to a PNG file.
-	if err := p.Save(4*vg.Inch, 4*vg.Inch, "points.png"); err != nil {
-		panic(err)
+	if err := p.Save(4*vg.Inch, 4*vg.Inch, graphFileName); err != nil {
+		log.Fatalln(err)
 	}
 }
 
-func generateTempGraoh() plotter.XYs {
-	pts := make(plotter.XYs, len(frames)-1)
+func plotDataFrom(length int, getData func(idx int) float64) plotter.XYs {
+	pts := make(plotter.XYs, length-1)
 	for i := range pts {
 		pts[i].X = float64(i)
-		pts[i].Y = float64(frames[i].Temp)
-	}
-	return pts
-}
-
-func generateHumGraoh() plotter.XYs {
-	pts := make(plotter.XYs, len(frames)-1)
-	for i := range pts {
-		pts[i].X = float64(i)
-		pts[i].Y = float64(frames[i].Hum)
+		pts[i].Y = getData(i)
 	}
 	return pts
 }
@@ -80,15 +72,11 @@ func processString(input string) {
 	lines := strings.Split(input, "\n")
 	i := 0
 	for i < len(lines) {
-		// println(".", strings.TrimSpace(lines[i]), ".")
 		if strings.Contains(lines[i], "Hell") {
 			break
 		}
 		i++
 	}
-	// println("kek")
-	// println(input)
-	// println("sadas")
 	for ; i < len(lines)-2; i += 3 {
 		var temp, hum int
 		temp, err := strconv.Atoi(remove(lines[i+1]))
@@ -100,16 +88,14 @@ func processString(input string) {
 			log.Fatalln(err)
 		}
 		fmt.Println(temp, hum)
-		frames = append(frames, Frame{
+		data = append(data, ClimatFrame{
 			Temp: temp,
 			Hum:  hum,
 		})
 	}
-	// println("lol")
 }
 
 func main() {
-	// Setup Serial Port
 	c := &serial.Config{Name: comPort, Baud: baudRate}
 	s, err := serial.OpenPort(c)
 	if err != nil {
@@ -127,12 +113,12 @@ func main() {
 		if i < 15 {
 			data += string(buf[:r])
 			i++
-            println("i: ", i)
+			println("i: ", i)
 		} else {
 			processString(data)
 			i = 0
 			data = ""
-            createGraph()
+			generatePointsGraph()
 		}
 	}
 }
